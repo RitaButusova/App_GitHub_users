@@ -13,8 +13,8 @@ const searchUser = document.querySelector('.searchUser');
 
 class Github {
     constructor() {
-        this.clientId = '772438d885d6a062e1fb';
-        this.clientSecret = '9ecc6b444aad7bafda358d49c85ca8acd64ce9a9';
+        this.clientId = 'b5309df4cd112b434b90';
+        this.clientSecret = '4ba92d536b631297ae1b29345e9ca47041d9c5cb';
     }
 
     // https://api.github.com/
@@ -89,11 +89,25 @@ class UI {
 const github = new Github();
 const ui = new UI();
 
-searchUser.addEventListener('keyup', async (event) => {
-    const userText = event.target.value; // значення інпута
+const TIME = 500;
 
+const debaunce = (func, wait) => {
+    let timeout;
+
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+const debauncedEventListener = debaunce(async (event) => {
+    const userText = event.target.value;
     const response = await github.getUser(userText);
-
+    console.log(response)
     if (userText.trim() !== '') { 
         if (response.message === 'Not Found') {
             ui.showAlert('User not found', 'alert alert-danger');
@@ -103,4 +117,6 @@ searchUser.addEventListener('keyup', async (event) => {
     } else {
         ui.clearProfile();
     }
-})
+}, TIME);
+
+searchUser.addEventListener('keyup', debauncedEventListener);
