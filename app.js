@@ -13,8 +13,8 @@ const searchUser = document.querySelector('.searchUser');
 
 class Github {
     constructor() {
-        this.clientId = 'd9308aacf8b204d361fd';
-        this.clientSecret = '84969aeef73956f4ec9e8716d1840532802bb81b';
+        this.clientId = '772438d885d6a062e1fb';
+        this.clientSecret = '9ecc6b444aad7bafda358d49c85ca8acd64ce9a9';
     }
 
     // https://api.github.com/
