@@ -24,6 +24,12 @@ class Github {
         return user;
     }
     
+    async getRepositories(userName) {
+        const response = await fetch(`${GITHUB_API}users/${userName}/repos?per_page=5&page=1?client_id=${this.clientId}&client_secret=${this.clientSecret}`);
+        const repositories = await response.json();
+        return repositories;
+    }
+
 }
 
 class UI {
@@ -57,6 +63,24 @@ class UI {
       <h3 class="page-heading mb-3">Latest Repos</h3>
       <div class="repos"></div>
         `;
+    }
+
+    showRepositories(repositories) {
+        const user_repos = document.querySelector('.repos');
+        let list_repos = '';
+        repositories.map((repository) => {
+            list_repos += `
+            <div class="col-md-4">
+            <h4>Repository name: ${repository.name}</h4>
+            <ul class="list-group">
+              <li class="list-group-item">Description : ${repository.description}</li>
+              <li class="list-group-item">Last update: ${repository.updated_at}</li>
+              <li class="list-group-item">Link: ${repository.html_url}</li>
+            </ul>
+            </div>
+            `
+        })
+        user_repos.innerHTML = list_repos;
     }
 
     showAlert(message, className) {
@@ -107,12 +131,13 @@ const debaunce = (func, wait) => {
 const debauncedEventListener = debaunce(async (event) => {
     const userText = event.target.value;
     const response = await github.getUser(userText);
-    console.log(response)
+    const response_repos = await github.getRepositories(response.login);
     if (userText.trim() !== '') { 
         if (response.message === 'Not Found') {
             ui.showAlert('User not found', 'alert alert-danger');
         } else {
             ui.showProfile(response) // response = user
+            ui.showRepositories(response_repos);
         }
     } else {
         ui.clearProfile();
